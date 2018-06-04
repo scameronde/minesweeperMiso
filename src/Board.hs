@@ -13,6 +13,7 @@ import Data.Map (Map, (!), elems, fromList, insert, toList)
 
 import Msg
 import Pos
+import Cell
 
 w :: Int
 w = 40
@@ -20,12 +21,6 @@ w = 40
 h :: Int
 h = 30
 
-data Cell = Cell
-    { mined :: Bool
-    , exposed :: Bool
-    , flagged :: Bool
-    , mineCount :: Int
-    } deriving (Show, Eq)
 
 type Board = Map Pos Cell
 

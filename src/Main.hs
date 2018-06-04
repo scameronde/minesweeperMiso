@@ -11,6 +11,9 @@ import Miso.String (MisoString, ms, pack)
 import Miso.Svg hiding (height_, style_, width_)
 
 import Board
+import Cell
+import Square
+import Number
 import Flag
 import Mine
 import Msg
@@ -22,46 +25,6 @@ type Game = (Board, Int)
 
 cellSize :: Int
 cellSize = 20
-
-getColor :: Cell -> String
-getColor (Cell _ exposed _ _) =
-    if exposed
-        then "#909090"
-        else "#CCCCCC"
-
-showSquare :: Pos -> Cell -> View Msg
-showSquare (xCoord, yCoord) cell =
-    rect_
-        [ x_ "0.05"
-        , y_ "0.05"
-        , width_ "0.9"
-        , height_ "0.9"
-        , style_ $ fromList [("fill", ms $ getColor cell)]
-        , onClick (LeftPick (xCoord, yCoord))
-        , onRightClick (RightPick (xCoord, yCoord))
-        ]
-        []
-
-showText :: Pos -> Int -> [View Msg]
-showText pos count =
-    let textColor =
-            case count of
-                1 -> "blue"
-                2 -> "green"
-                3 -> "red"
-                4 -> "brown"
-                _ -> "purple"
-    in [ text_
-             [ x_ "0.5"
-             , y_ "0.87"
-             , fontSize_ "1.0"
-             , fill_ textColor
-             , textAnchor_ "middle"
-             , onClick (LeftPick pos)
-             , onRightClick (RightPick pos)
-             ]
-             [text $ ms $ show count]
-       ]
 
 showCellDetail :: Pos -> Cell -> [View Msg]
 showCellDetail pos (Cell mined exposed flagged mineCount) =
