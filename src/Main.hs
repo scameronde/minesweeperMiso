@@ -1,8 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 
-import Control.Monad.Random (Rand, getRandom, getRandomR, runRand)
-import Control.Monad.State (State, get, put, runState)
+import Control.Monad.Random (Rand, getRandom, getRandomR, runRand, evalRand, execRand)
+import Control.Monad.State (execState)
 import Data.Map (Map, (!), fromList, insert, mapWithKey, toList)
 import System.Random
 
@@ -21,7 +21,8 @@ import Pos
 import RightClick
 import Smiley
 
-type Game = (Board, Int)
+type Seed = Int
+type Game = (Board, Seed)
 
 cellSize :: Int
 cellSize = 20
@@ -36,13 +37,13 @@ showCellDetail pos (Cell mined exposed flagged mineCount) =
 
 showCell :: Pos -> Cell -> View Msg
 showCell pos cell =
-    let (x, y) = pos
+    g_ [ transform_
+            (ms $    "scale (" ++ scale ++ ", " ++ scale ++ ") " ++ "translate (" ++ show x ++ ", " ++ show y ++ ") ")
+       ]
+       (showSquare pos cell : showCellDetail pos cell)
+    where 
+        (x, y) = pos
         scale = show cellSize
-    in g_ [ transform_
-                (ms $    "scale (" ++ scale ++ ", " ++ scale ++ ") " 
-                      ++ "translate (" ++ show x ++ ", " ++ show y ++ ") ")
-           ]
-           (showSquare pos cell : showCellDetail pos cell)
 
 centerStyle :: Map MisoString MisoString
 centerStyle =
@@ -70,21 +71,25 @@ updateGame :: Msg -> Game -> Effect Msg Game
 updateGame msg (board, seed) =
     case msg of
         Reset ->
-            let g0 = mkStdGen seed
+            noEff (newBoard, newSeed)
+            where
+                g0 = mkStdGen seed
                 (newBoard, g1) = runRand mkBoard g0
-                (newSeed, _) = runRand getRandom g1
-            in noEff (newBoard, newSeed)
+                newSeed = evalRand getRandom g1
         _ ->
-            let (_, newBoard) = runState (updateBoard msg) board
-            in noEff (newBoard, seed)
+            noEff (newBoard, seed)
+            where 
+                newBoard = execState (updateBoard msg) board
 
 main :: IO ()
 main = do
     seed <- getStdRandom random
-    let initialAction = Reset
+    let 
+        initialAction = Reset
         model = (mempty, seed)
         update = updateGame
         view = viewGame
         events = Data.Map.insert "contextmenu" False defaultEvents
         subs = []
+        mountPoint = Nothing
     startApp App {..}

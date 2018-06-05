@@ -8,6 +8,7 @@ import Control.Monad.Random
     , runRand
     , split
     )
+import Control.Monad
 import Control.Monad.State
 import Data.Map (Map, (!), elems, fromList, insert, toList)
 
@@ -30,9 +31,8 @@ mkCell = do
     return $ Cell (t < 0.201) False False 0
 
 initBoard :: RandomGen g => [Pos] -> Rand g Board
-initBoard positions = do
-    cells <- sequence $ take (length positions) (repeat mkCell)
-    return $ fromList (zip positions cells)
+initBoard positions = 
+    (fromList . zip positions) <$> replicateM (length positions) mkCell
 
 mkBoard :: RandomGen g => Rand g Board
 mkBoard = do
