@@ -55,8 +55,7 @@ exposeMines :: State Board [(Pos, Maybe Cell)]
 exposeMines = do
     board <- get
     let toExpose =
-            filter (\(pos, cell) -> (not . exposed) cell && mined cell) $
-            toList board
+            filter (\(pos, cell) -> (not . exposed) cell && mined cell) $ toList board
         modifications =
             fmap (\(p, c) -> (p, Just $ c {exposed = True})) toExpose
     put $ foldl (\b (p, Just c) -> insert p c b) board modifications

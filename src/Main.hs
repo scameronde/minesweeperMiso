@@ -12,38 +12,12 @@ import Miso.Svg hiding (height_, style_, width_)
 
 import Board
 import Cell
-import Square
-import Number
-import Flag
-import Mine
 import Msg
-import Pos
-import RightClick
 import Smiley
 
 type Seed = Int
 type Game = (Board, Seed)
 
-cellSize :: Int
-cellSize = 20
-
-showCellDetail :: Pos -> Cell -> [View Msg]
-showCellDetail pos (Cell mined exposed flagged mineCount) =
-    case ( flagged,    mined, exposed, 0 /= mineCount) of
-         (    True,       _,       _,       _) -> showFlag pos
-         (       _,    True,    True,       _) -> showMine pos
-         (       _,       _,    True,    True) -> showText pos mineCount
-         (       _,       _,       _,       _) -> []
-
-showCell :: Pos -> Cell -> View Msg
-showCell pos cell =
-    g_ [ transform_
-            (ms $    "scale (" ++ scale ++ ", " ++ scale ++ ") " ++ "translate (" ++ show x ++ ", " ++ show y ++ ") ")
-       ]
-       (showSquare pos cell : showCellDetail pos cell)
-    where 
-        (x, y) = pos
-        scale = show cellSize
 
 centerStyle :: Map MisoString MisoString
 centerStyle =
