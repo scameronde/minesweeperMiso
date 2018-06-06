@@ -27,7 +27,7 @@ type Board = Map Pos Cell
 
 mkCell :: RandomGen g => Rand g Cell
 mkCell = do
-    t <- getRandomR (0.0 :: Float, 1.0)
+    t <- getRandomR (0.0 :: Float, 1.0 :: Float)
     return $ Cell (t < 0.201) False False 0
 
 initBoard :: RandomGen g => [Pos] -> Rand g Board
