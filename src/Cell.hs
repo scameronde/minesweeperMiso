@@ -7,10 +7,10 @@ module Cell
     ) where
 
 
+import Consts
+import Msg
 import Pos
 import RightClick
-
-import Msg
 
 import Data.Map (Map, fromList)
 import Miso
@@ -25,9 +25,6 @@ data Cell = Cell
     , mineCount :: Int
     } deriving (Show, Eq)
 
-
-cellSize :: Int
-cellSize = 20
 
 showFlag :: Pos -> [View Msg]
 showFlag pos =

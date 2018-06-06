@@ -10,6 +10,7 @@ import Miso
 import Miso.String (MisoString, ms, pack)
 import Miso.Svg hiding (height_, style_, width_)
 
+import Consts
 import Board
 import Cell
 import Msg
@@ -33,8 +34,8 @@ viewGame (board, _) =
               [style_ centerStyle]
               [ svg_
                     [ version_ "1.1"
-                    , width_ (ms $ show (w * cellSize))
-                    , height_ (ms $ show (h * cellSize))
+                    , width_ (ms $ show (gridWidth * cellSize))
+                    , height_ (ms $ show (gridHeight * cellSize))
                     ]
                     (map snd (toList (mapWithKey showCell board)))
               ]
@@ -53,7 +54,7 @@ updateGame msg (board, seed) =
         _ ->
             noEff (newBoard, seed)
             where 
-                newBoard = updateBoardPlain msg board
+                newBoard = updateBoard msg board
 
 main :: IO ()
 main = do

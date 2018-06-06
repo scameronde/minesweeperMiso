@@ -11,15 +11,10 @@ import Control.Monad.Random
 import Control.Monad
 import Data.Map (Map, (!), fromList, insert, toList)
 
+import Consts
 import Msg
 import Pos
 import Cell
-
-w :: Int
-w = 40
-
-h :: Int
-h = 30
 
 
 type Board = Map Pos Cell
@@ -35,7 +30,7 @@ initBoard positions =
 
 mkBoard :: RandomGen g => Rand g Board
 mkBoard = do
-    let positions = [(x, y) | x <- [0 .. w - 1], y <- [0 .. h - 1]]
+    let positions = [(x, y) | x <- [0 .. gridWidth - 1], y <- [0 .. gridHeight - 1]]
     initBoard positions
 
 adjacents :: Pos -> [Pos]
@@ -46,8 +41,8 @@ adjacents (x, y) =
     , (xx, yy) /= (x, y)
     , xx >= 0
     , yy >= 0
-    , xx < w
-    , yy < h
+    , xx < gridWidth
+    , yy < gridHeight
     ]
 
 exposeMines :: Board -> Board
