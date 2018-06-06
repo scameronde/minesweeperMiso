@@ -2,4 +2,4 @@
 *.js_o
 *.js_hi
 result
-
+src/dist
