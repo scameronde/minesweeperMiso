@@ -53,7 +53,7 @@ updateGame msg (board, seed) =
         _ ->
             noEff (newBoard, seed)
             where 
-                newBoard = execState (updateBoard msg) board
+                newBoard = updateBoardPlain msg board
 
 main :: IO ()
 main = do

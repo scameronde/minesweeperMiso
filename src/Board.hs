@@ -9,8 +9,7 @@ import Control.Monad.Random
     , split
     )
 import Control.Monad
-import Control.Monad.State
-import Data.Map (Map, (!), elems, fromList, insert, toList)
+import Data.Map (Map, (!), fromList, insert, toList)
 
 import Msg
 import Pos
@@ -51,68 +50,55 @@ adjacents (x, y) =
     , yy < h
     ]
 
-exposeMines :: State Board [(Pos, Maybe Cell)]
-exposeMines = do
-    board <- get
-    let toExpose =
-            filter (\(pos, cell) -> (not . exposed) cell && mined cell) $ toList board
-        modifications =
-            fmap (\(p, c) -> (p, Just $ c {exposed = True})) toExpose
-    put $ foldl (\b (p, Just c) -> insert p c b) board modifications
-    return modifications
+exposeMines :: Board -> Board
+exposeMines board = 
+    newBoard where
+        toExpose = filter (\(pos, cell) -> (not . exposed) cell && mined cell) $ toList board
+        modificated = fmap (\(p, c) -> (p, Just $ c {exposed = True})) toExpose
+        newBoard = foldl (\b (p, Just c) -> insert p c b) board modificated
 
-exposeSelection :: Pos -> Cell -> Int -> State Board [(Pos, Maybe Cell)]
-exposeSelection pos cell count = do
-    board <- get
-    let cell = board ! pos
-        toExpose =
-            if flagged cell
-                then []
-                else [(pos, cell)]
-        modifications =
-            fmap
-                (\(p, c) -> (p, Just $ c {exposed = True, mineCount = count}))
-                toExpose
-    put $ foldl (\b (p, Just c) -> insert p c b) board modifications
-    return modifications
+exposeSelection :: Board -> Pos -> Cell -> Int -> Board
+exposeSelection board pos cell count =
+    newBoard where
+        cell = board ! pos
+        toExpose = if flagged cell
+                        then []
+                        else [(pos, cell)]
+        modificated = fmap (\(p, c) -> (p, Just $ c {exposed = True, mineCount = count})) toExpose
+        newBoard = foldl (\b (p, Just c) -> insert p c b) board modificated
 
-exposeCells :: Pos -> State Board [(Pos, Maybe Cell)]
-exposeCells pos = do
-    board <- get
-    let cell@(Cell m e f mc) = board ! pos
+exposeCells :: Board -> Pos -> Board
+exposeCells board pos =
+    newBoard where
+        cell@(Cell m e f mc) = board ! pos
         indices = adjacents pos
         count = length $ filter mined $ fmap (board !) indices
-        checkList =
-            if m || e || f || count /= 0
-                then []
-                else indices
-    exposedSelection <- exposeSelection pos cell count
-    exposedNeighbors <- mapM exposeCells checkList
-    exposedMines <-
-        if m
-            then exposeMines
-            else return []
-    return $ exposedSelection ++ concat exposedNeighbors ++ exposedMines
+        checkList = if m || e || f || count /= 0
+                        then []
+                        else indices
+        b1 = exposeSelection board pos cell count
+        b2 = foldl (\b -> exposeCells b) b1 checkList
+        b3 = if m
+                then exposeMines b2
+                else b2
+        newBoard = b3
 
-flagCell :: Pos -> State Board [(Pos, Maybe Cell)]
-flagCell pos = do
-    board <- get
-    let cell = board ! pos
-        modifications =
-            if exposed cell
-                then [] -- can't flag a cell that's already exposed.  
-                else [(pos, Just $ cell {flagged = not $ flagged cell})]
-    put $ foldl (\b (p, Just c) -> insert p c b) board modifications
-    return modifications
+flagCell :: Board -> Pos -> Board
+flagCell board pos =
+    newBoard where
+        cell = board ! pos
+        modificated = if exposed cell
+                        then []
+                        else [(pos, Just $ cell {flagged = not $ flagged cell})]
+        newBoard = foldl (\b (p, Just c) -> insert p c b) board modificated
 
 gameOver :: Board -> Bool
 gameOver = any (\cell -> exposed cell && mined cell)
 
-updateBoard :: Msg -> State Board [(Pos, Maybe Cell)]
-updateBoard msg = do
-    board <- get
+updateBoard :: Msg -> Board -> Board
+updateBoard msg board = 
     if gameOver board
-        then return []
+        then board
         else case msg of
-                 LeftPick pos -> exposeCells pos
-                 RightPick pos -> flagCell pos
+            LeftPick pos -> exposeCells board pos
+            RightPick pos -> flagCell board pos
