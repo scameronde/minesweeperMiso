@@ -3,3 +3,5 @@
 *.js_hi
 result
 src/dist
+.vscode
+
