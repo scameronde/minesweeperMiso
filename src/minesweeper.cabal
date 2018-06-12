@@ -9,3 +9,4 @@ executable minesweeper
   main-is:             Main.hs
   build-depends:       base, miso, mtl, containers, random, MonadRandom
   default-language:    Haskell2010
+  other-modules:       Board, Cell, Consts, Msg, Pos, RightClick, Smiley
