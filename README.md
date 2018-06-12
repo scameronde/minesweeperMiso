@@ -1,7 +1,7 @@
 # Miso example
 
-This project builds a minesweeper clone, the output is included in this repository for demonstration purposes in
-[output/minesweeper.jsexe/index.html](https://scameronde.github.com/minesweeperMiso/output/minesweeper.jsexe/index.html).
+This project builds a minesweeper clone, the output is included in this repository for demonstration purposes:
+[Play Minesweeper!](https://scameronde.github.com/minesweeperMiso/index.html).
 
 This is a fork of https://github.com/dc25/minesweeperMiso.
 
