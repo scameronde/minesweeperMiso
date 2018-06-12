@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 
-import Control.Monad.Random (Rand, getRandom, getRandomR, runRand, evalRand, execRand)
+import Control.Monad.Random (Rand, getRandom, getRandomR, runRand, evalRand)
 import Control.Monad.State (execState)
 import Data.Map (Map, (!), fromList, insert, mapWithKey, toList)
 import System.Random
@@ -53,13 +53,13 @@ updateGame msg (board, seed) =
                 newSeed = evalRand getRandom g1
         _ ->
             noEff (newBoard, seed)
-            where 
+            where
                 newBoard = updateBoard msg board
 
 main :: IO ()
 main = do
     seed <- getStdRandom random
-    let 
+    let
         initialAction = Reset
         model = (mempty, seed)
         update = updateGame
