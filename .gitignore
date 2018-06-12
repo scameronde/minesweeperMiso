@@ -5,4 +5,5 @@ result
 src/dist
 .vscode
 .stack-work
-
+node_modules/
+package-lock.json
